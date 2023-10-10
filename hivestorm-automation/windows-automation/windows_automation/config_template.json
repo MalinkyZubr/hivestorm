@@ -1,0 +1,20 @@
+{
+    "authorized_users": {
+        "MalinkyZubr":"admin"
+    },
+    "unauthorized_programs": [
+        "wireshark",
+        "hashcat",
+        "nmap",
+        "zenmap",
+        "rainbowcrack"
+    ],
+    "unauthorized_extensions": [ 
+        "mp3",
+        "mp4",
+        "silly"
+    ],
+    "need_update": [
+        "firefox"
+    ]
+}
