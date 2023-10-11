@@ -91,6 +91,7 @@ class Executor:
 
 
 if __name__ == "__main__":
+    print("[!] PLEASE ENSURE THAT YOU HAVE COMPLETED ALL OF THE FORENSICS QUESTIONS BEFORE RUNNING THIS!")
     if not is_admin():
         print("[-] Program must be run as admin to function properly")
         sys.exit()
