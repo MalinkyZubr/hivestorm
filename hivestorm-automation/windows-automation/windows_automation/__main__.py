@@ -1,5 +1,7 @@
 import argparse
 import os
+import sys
+import ctypes
 import json
 from command import Command
 
@@ -10,6 +12,17 @@ location_path = os.path.join(script_dir, "location.json") # stores location of t
 
 with open(config_template_path, 'r') as f:
     CONFIG_TEMPLATE = json.load(f)
+
+
+def is_admin():
+    try:
+        return os.getuid() == 0
+    except AttributeError:
+        pass
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin() == 1
+    except AttributeError:
+        raise Exception("[-] OS Not recognized")
 
 
 class Executor:
@@ -43,7 +56,7 @@ class Executor:
     def set_config_location(self, config_location, *args):
         print(f"[+] Setting policy config location to {config_location}")
         is_path = os.path.isfile(config_location)
-        if not is_path: raise FileNotFoundError("[-] The entered file does not exist")
+        if not is_path: return "[-] The entered file does not exist"
 
         with open(location_path, 'w') as f:
             json.dump({"location":os.path.abspath(config_location)}, f)
@@ -78,5 +91,8 @@ class Executor:
 
 
 if __name__ == "__main__":
+    if not is_admin():
+        print("[-] Program must be run as admin to function properly")
+        sys.exit()
     executor = Executor()
     executor.run()

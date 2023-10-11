@@ -1,6 +1,7 @@
 {
     "authorized_users": {
-        "MalinkyZubr":"admin"
+        "Plousho":"admin",
+        "MalinkyZubr":"user"
     },
     "unauthorized_programs": [
         "wireshark",
