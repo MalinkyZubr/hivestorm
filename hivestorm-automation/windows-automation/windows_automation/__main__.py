@@ -34,7 +34,6 @@ class Executor:
         self.parser.add_argument("-gC", "--generateConfig", help="generate a config file at designated path")
         self.parser.add_argument("-sC", "--setConfig", help="set the active config file to the path")
         self.parser.add_argument("-cU", "--configureUsers", help="run user checks", action="store_true")
-        self.parser.add_argument("-cP", "--configurePasswords", help="run password policy configuration", action="store_true")
         self.parser.add_argument("-cS", "--configureSecurity", help="configure security settings on the machine", action="store_true")
         self.parser.add_argument("-U", "--update", help="run system and program updates", action="store_true")
         self.parser.add_argument("-cF", "--configureFiles", help="search file system for unauthorized files and programs", action="store_true")
@@ -49,7 +48,6 @@ class Executor:
             "configureUsers":Command(script_name="users.ps1", config_fields=['authorized_users'], policy=self.config),
             "configureFiles":Command(script_name="files.ps1", config_fields=['authorized_users', 'unauthorized_programs', 'unauthorized_extensions'], policy=self.config),
             "configureSecurity":Command(script_name="security.ps1", config_fields=['authorized_users'], policy=self.config),
-            "configurePasswords":Command(script_name="passwords.ps1", config_fields=['authorized_users'], policy=self.config),
             "update":Command(script_name="updates.ps1", config_fields=['need_update'], policy=self.config)
         }
         

@@ -1,7 +1,13 @@
 {
     "authorized_users": {
-        "Plousho":"admin",
-        "MalinkyZubr":"user"
+        "Plousho":{
+            "permission":"admin",
+            "password":"silly1"
+        },
+        "MalinkyZubr":{
+            "permission":"user",
+            "password":"silly2"
+        }
     },
     "unauthorized_programs": [
         "wireshark",
