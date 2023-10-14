@@ -22,7 +22,7 @@
         "Hydra",
         "Metasploit"
     ],
-    "unauthorized_extensions_home": [ 
+    "unauthorized_extensions": [ 
         "mp3",
         "mp4",
         "silly"
