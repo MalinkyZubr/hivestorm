@@ -30,7 +30,7 @@ class Command:
         if not policy:
             return None
         cwd = os.path.dirname(os.path.abspath(__file__))
-        self.script = os.path.join(cwd, f"{cwd}/{script_name}.ps1")
+        self.script = os.path.join(cwd, f"{cwd}/payloads/{script_name}.ps1")
 
         if config_fields and policy:
             self.args = {field:policy[field] for field in config_fields}
@@ -55,7 +55,7 @@ class Command:
 
     def __call__(self, *args):
         declarations = ""
-        command_call = f"{script_dir}\\payloads\\{self.script} "
+        command_call = f"{self.script} "
         if not self.policy:
             return "[-] Policy not found, cancelling"
         if self.args:
