@@ -63,9 +63,7 @@ class Command:
                 declarations += f"{self.parse_datastructures(key, value)}; "
                 command_call += f"-{key} ${key}"
         declarations += command_call
-        process = subprocess.Popen(["powershell", declarations], stdout=subprocess.PIPE) # this will not work. Must parse these args to work with the powershell scripts
-        p_out, p_err = process.communicate()
-        return p_out, p_err
+        os.system("powershell " + declarations)
 
 
 class Executor:
@@ -130,7 +128,7 @@ class Executor:
         args = vars(self.parser.parse_args())
         for command, argument in args.items():
             if argument:
-                print(self.commands[command](argument))
+                self.commands[command](argument)
 
 
 if __name__ == "__main__":
