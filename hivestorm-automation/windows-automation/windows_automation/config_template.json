@@ -10,13 +10,19 @@
         }
     },
     "unauthorized_programs": [
-        "wireshark",
+        "Wireshark",
         "hashcat",
         "nmap",
         "zenmap",
-        "rainbowcrack"
+        "rainbowcrack",
+        "Npcap",
+        "Burpsuite",
+        "Mimikatz",
+        "Snort",
+        "Hydra",
+        "Metasploit"
     ],
-    "unauthorized_extensions": [ 
+    "unauthorized_extensions_home": [ 
         "mp3",
         "mp4",
         "silly"
