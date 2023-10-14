@@ -24,7 +24,6 @@ def is_admin():
     except AttributeError:
         raise Exception("[-] OS Not recognized")
     
-
 class Command:
     def __init__(self, script_name=None, config_fields=None, policy=None):
         self.policy = policy
@@ -35,11 +34,36 @@ class Command:
 
         if config_fields and policy:
             self.args = {field:policy[field] for field in config_fields}
+        else:
+            self.args = {}
+
+    def parse_datastructures(self, name, data):
+        if isinstance(data, dict):
+            formatted_data = f"${name} = @{{"
+            for key, value in data.items():
+                formatted_data += f"\n{key} = {value}"
+            formatted_data += "}"
+        elif isinstance(data, list):
+            formatted_data = f"${name} = @("
+            for value in data:
+                if value != data[-1]:
+                    formatted_data += f"\n{data},"
+                else:
+                    formatted_data += f"\n{data}"
+            formatted_data += "\n)"
+        return formatted_data
 
     def __call__(self, *args):
+        declarations = ""
+        command_call = f"{self.script} "
         if not self.policy:
             return "[-] Policy not found, cancelling"
-        process = subprocess.Popen(["powershell",self.script, self.args], stdout=subprocess.PIPE) # this will not work. Must parse these args to work with the powershell scripts
+        if self.args:
+            for key, value in self.args.items():
+                declarations += f"{self.parse_datastructures(key, value)}; "
+                command_call += f"-{key} ${key}"
+        declarations += command_call
+        process = subprocess.Popen(["powershell", declarations], stdout=subprocess.PIPE) # this will not work. Must parse these args to work with the powershell scripts
         p_out, p_err = process.communicate()
         return p_out, p_err
 
@@ -65,11 +89,11 @@ class Executor:
         self.commands = {
             "generateConfig":self.generate_config,
             "setConfig":self.set_config_location,
-            "configureUsers":Command(script_name="users.ps1", config_fields=['authorized_users'], policy=self.config),
-            "configureFiles":Command(script_name="files.ps1", config_fields=['unauthorized_programs', 'unauthorized_extensions'], policy=self.config),
-            "configureSecurity":Command(script_name="security.ps1", policy=self.config),
-            "update":Command(script_name="updates.ps1", config_fields=['need_update'], policy=self.config),
-            "exeCheck":Command(script_name="exeCheck.ps1", policy=self.config)
+            "configureUsers":Command(script_name="users", config_fields=['authorized_users'], policy=self.config),
+            "configureFiles":Command(script_name="files", config_fields=['unauthorized_programs', 'unauthorized_extensions'], policy=self.config),
+            "configureSecurity":Command(script_name="security", policy=self.config),
+            "update":Command(script_name="updates", config_fields=['need_update'], policy=self.config),
+            "exeCheck":Command(script_name="exeCheck", policy=self.config)
         }
         
     def set_config_location(self, config_location, *args):

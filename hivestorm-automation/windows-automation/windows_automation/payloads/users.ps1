@@ -5,7 +5,7 @@
 # create necessary users
 # configure group policies
 param (
-    [Hashtable]$usersAndPermissions
+    [Hashtable]$authorized_users
 )
 
 $passwordLength = 8
@@ -22,7 +22,7 @@ $users = Get-LocalGroupMember -Name Users | Select-Object -ExpandProperty name
 Write-Output "[+] Checking for unauthorized users"
 foreach ($user in $accounts) {
     $name = $user.Name
-    if($usersAndPermissions.ContainsKey($name)){
+    if($authorized_users.ContainsKey($name)){
         continue
     }
     Write-Output "[!] Removing the user $name"
@@ -33,7 +33,7 @@ foreach ($user in $accounts) {
 Write-Output "[+] Checking unauthorized admins"
 foreach ($admin in $admins) {
     $adminName = $admin -match '(?<=\\).*'
-    if(!$adminName -eq 'Administrator' -and !$usersAndPermissions[$adminName]['permission'] -eq 'admin')
+    if(!$adminName -eq 'Administrator' -and !$authorized_users[$adminName]['permission'] -eq 'admin')
     {
         Write-Output "[!] Removinig the user $adminName from admins"
         NET LOCALGROUP Users $adminName /ADD
@@ -45,7 +45,7 @@ foreach ($admin in $admins) {
 Write-Output "[+] Checking for users that should have admin priveleges"
 foreach ($user in $users) {
     $userName = $user -match '(?<=\\).*'
-    if($usersAndPermissions[$userName]['permission'] -eq "admin")
+    if($authorized_users[$userName]['permission'] -eq "admin")
     {
         Write-Output "[!] adding $userName to admins"
         NET LOCALGROUP Administrators $adminName /ADD
@@ -62,9 +62,9 @@ NET ACCOUNTS /UNIQUEPW:$uniquePw
 # check for users that dont exist, and create them
 # check for non-compliant passwords
 Write-Output "[+] Creating required users"
-foreach ($user in $usersAndPermissions.GetEnumerator())
+foreach ($user in $authorized_users.GetEnumerator())
 {
-    if(!$accountNames -contains $user -or $usersAndPermissions[$user]['password'].Length -lt $passwordLength)
+    if(!$accountNames -contains $user -or $authorized_users[$user]['password'].Length -lt $passwordLength)
     {
         Write-Output "[!] User $user needs a password!"
         while(1)
@@ -80,7 +80,7 @@ foreach ($user in $usersAndPermissions.GetEnumerator())
                         New-LocalUser -Name $user -Description "added courtesy of Zubr" -Password $password
                         Write-Output "[+] User $user successfully created"
                     }
-                    elseif($usersAndPermissions[$user]['password'].Length -lt $passwordLength){
+                    elseif($authorized_users[$user]['password'].Length -lt $passwordLength){
                         Set-LocalUser -Name $user -Password $password -PasswordNeverExpires $false
                         Write-Output "[+] User $user password updated to meet standards successfully"
                     }

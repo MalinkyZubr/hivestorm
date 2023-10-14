@@ -7,13 +7,13 @@
 Write-Output "[+] Now checking for unauthorized file extensions"
 
 param (
-    [Array]$unauthorizedExtensions,
-    [Array]$unauthorizedPrograms
+    [Array]$unauthorized_extensions,
+    [Array]$unauthorized_programs
 )
 
 # check for unauthorized file extensions
 Write-Output "[+] Now checking for unauthorized file extensions"
-foreach($extension in $unauthorizedExtensions) {
+foreach($extension in $unauthorized_extensions) {
     $violators = Get-ChildItem C:\Users -Recurse -Filter "*.$extension" | Select-Object Directory, Name
     foreach($violator in $violators) {
         $directory = $violator.Directory
@@ -25,7 +25,7 @@ foreach($extension in $unauthorizedExtensions) {
 
 # scan for illegal programs
 Write-Output "[+] Now checking for unauthorized programs"
-foreach($progname in $unauthorizedPrograms) {
+foreach($progname in $unauthorized_programs) {
     $violators = Get-ChildItem -Path 'C:\' -Filter "*$progname*" -Directory -Recurse | Select-Object -ExpandProperty FullName
     if($violators.Length -gt 0) {
         Write-Output "[!] Detected program files for $progname at:`n$violators`nFixing the issue now..."

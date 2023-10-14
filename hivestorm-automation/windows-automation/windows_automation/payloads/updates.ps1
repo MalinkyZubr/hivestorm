@@ -2,7 +2,7 @@
 # update all programs installed
 
 param (
-    [Array]$chocolateyUpgrades
+    [Array]$need_update
 )
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 # use strong encryption
@@ -16,7 +16,7 @@ try {
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-    foreach($update in $chocolateyUpgrades)
+    foreach($update in $need_update)
     {
         Invoke-Expression "choco upgrade $update -y"
     }
