@@ -12,3 +12,6 @@ python = "^3.10"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+run = 'windows_automation:__main__'

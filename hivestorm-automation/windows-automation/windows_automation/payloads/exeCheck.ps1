@@ -24,6 +24,8 @@ foreach($file in $exeLocal){
     }
 }
 
+Write-Output $potentiallyDangerous
+
 if($potentiallyDangerous.Length -gt 0)
 {
     Write-Output "[!] Files were found that seem unusual. Here they are"
@@ -47,7 +49,7 @@ if($potentiallyDangerous.Length -gt 0)
                     Write-Host "[+] Removed $potentiallyDangerou[$choice]"
                 }
             }
-            catch [RuntimeException] 
+            catch [System.Management.Automation.RuntimeException] 
             {
                 if($choice -eq "q")
                 {

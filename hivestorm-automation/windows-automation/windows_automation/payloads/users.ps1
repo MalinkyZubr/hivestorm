@@ -81,12 +81,12 @@ foreach ($user in $usersAndPermissions.GetEnumerator())
                         Write-Output "[+] User $user successfully created"
                     }
                     elseif($usersAndPermissions[$user]['password'].Length -lt $passwordLength){
-                        Set-LocalUser -Password $password -PasswordNeverExpires $false
+                        Set-LocalUser -Name $user -Password $password -PasswordNeverExpires $false
                         Write-Output "[+] User $user password updated to meet standards successfully"
                     }
                     $password = ""
                 }
-                catch [InvalidPasswordException]
+                catch
                 {
                     Write-Output "[!] The password does not meet complexity requirements. Try again"
                     continue

@@ -1,9 +1,8 @@
 # update windows
 # update all programs installed
 
-$chocolateyUpgrades = @(
-    "choco upgrade firefox -y",
-    "choco upgrade notepadplusplus -y"
+param (
+    [Array]$chocolateyUpgrades
 )
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 # use strong encryption
@@ -19,10 +18,10 @@ try {
 
     foreach($update in $chocolateyUpgrades)
     {
-        Invoke-Expression $update
+        Invoke-Expression "choco upgrade $update -y"
     }
 }
-catch [RuntimeException] {
+catch [System.Management.Automation.RuntimeException] {
     Write-Host "[!] Must install NET Framework, rebooting now"
     Restart-Computer -Force
 }

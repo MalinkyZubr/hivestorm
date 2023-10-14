@@ -59,7 +59,7 @@ $registryKeys = @(
         Value = "Block"
     },
     @{
-        Path = "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server"
+        Path = "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server"
         Name = "fDenyTSConnections" # disable rdp
         PropertyType = "Dword"
         Value = 1
@@ -90,7 +90,7 @@ $registryKeys = @(
 Set-MpPreference -DisableRealtimeMonitoring $false
 
 # enable and configure firewall
-Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled $true
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
 foreach($rule in $rules)
 {
     New-NetFirewallRule @rule
@@ -99,7 +99,18 @@ foreach($rule in $rules)
 # Registry configs
 foreach($registry in $registryKeys)
 {
-    New-ItemProperty @registry
+    $name = $registry["Name"]
+    try {
+        New-ItemProperty @registry -ErrorAction Stop
+    }
+    catch [System.IO.IOException]
+    {
+        Write-Host "[+] Registry entry already complete for $name"
+    }
+    catch [System.Management.Automation.ItemNotFoundException]
+    {
+        Write-Host "[!] Registry path not found for $name"
+    }
 }
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 # use strong encryption

@@ -28,6 +28,8 @@
         "silly"
     ],
     "need_update": [
-        "firefox"
+        "firefox",
+        "notepadplusplus",
+        "7zip"
     ]
 }

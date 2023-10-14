@@ -1,2 +1,5 @@
 fall2023
 mynotes
+__pycache__
+dist
+tests
