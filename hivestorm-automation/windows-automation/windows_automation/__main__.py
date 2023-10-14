@@ -3,7 +3,7 @@ import os
 import sys
 import ctypes
 import json
-from command import Command
+import subprocess
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,6 +23,24 @@ def is_admin():
         return ctypes.windll.shell32.IsUserAnAdmin() == 1
     except AttributeError:
         raise Exception("[-] OS Not recognized")
+    
+
+class Command:
+    def __init__(self, script_name=None, config_fields=None, policy=None):
+        self.policy = policy
+        if not policy:
+            return None
+        cwd = os.path.dirname(os.path.abspath(__file__))
+        self.script = os.path.join(cwd, f"{cwd}/{script_name}.ps1")
+
+        self.args = {field:policy[field] for field in config_fields}
+
+    def __call__(self, *args):
+        if not self.policy:
+            return "[-] Policy not found, cancelling"
+        process = subprocess.Popen(["powershell",self.script, self.args], stdout=subprocess.PIPE) # this will not work. Must parse these args to work with the powershell scripts
+        p_out, p_err = process.communicate()
+        return p_out, p_err
 
 
 class Executor:
@@ -31,13 +49,13 @@ class Executor:
                                         description="Automated script system to complete tasks for hivestorm",
                                         )
 
-        self.parser.add_argument("-gC", "--generateConfig", help="generate a config file at designated path")
-        self.parser.add_argument("-sC", "--setConfig", help="set the active config file to the path")
+        self.parser.add_argument("-gC", "--generateConfig", help="generate a config file at designated path", metavar="CONFIG_PATH")
+        self.parser.add_argument("-sC", "--setConfig", help="set the active config file to the path", metavar="CONFIG_PATH")
         self.parser.add_argument("-cU", "--configureUsers", help="run user checks", action="store_true")
-        self.parser.add_argument("-cP", "--configurePasswords", help="run password policy configuration", action="store_true")
         self.parser.add_argument("-cS", "--configureSecurity", help="configure security settings on the machine", action="store_true")
         self.parser.add_argument("-U", "--update", help="run system and program updates", action="store_true")
         self.parser.add_argument("-cF", "--configureFiles", help="search file system for unauthorized files and programs", action="store_true")
+        self.parser.add_argument("-eXC", "--exeCheck", help="Check all the EXE files on the system for suspicious behavior", action="store_true")
 
         self.config = self.load_config()
         if not self.config:
@@ -47,10 +65,10 @@ class Executor:
             "generateConfig":self.generate_config,
             "setConfig":self.set_config_location,
             "configureUsers":Command(script_name="users.ps1", config_fields=['authorized_users'], policy=self.config),
-            "configureFiles":Command(script_name="files.ps1", config_fields=['authorized_users', 'unauthorized_programs', 'unauthorized_extensions'], policy=self.config),
-            "configureSecurity":Command(script_name="security.ps1", config_fields=['authorized_users'], policy=self.config),
-            "configurePasswords":Command(script_name="passwords.ps1", config_fields=['authorized_users'], policy=self.config),
-            "update":Command(script_name="updates.ps1", config_fields=['need_update'], policy=self.config)
+            "configureFiles":Command(script_name="files.ps1", config_fields=['unauthorized_programs', 'unauthorized_extensions'], policy=self.config),
+            "configureSecurity":Command(script_name="security.ps1", policy=self.config),
+            "update":Command(script_name="updates.ps1", config_fields=['need_update'], policy=self.config),
+            "exeCheck":Command(script_name="exeCheck.ps1", policy=self.config)
         }
         
     def set_config_location(self, config_location, *args):
