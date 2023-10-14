@@ -55,7 +55,7 @@ class Command:
 
     def __call__(self, *args):
         declarations = ""
-        command_call = f"{self.script} "
+        command_call = f"{script_dir}\\payloads\\{self.script} "
         if not self.policy:
             return "[-] Policy not found, cancelling"
         if self.args:
