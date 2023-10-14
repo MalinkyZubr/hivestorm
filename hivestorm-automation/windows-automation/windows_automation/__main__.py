@@ -33,7 +33,8 @@ class Command:
         cwd = os.path.dirname(os.path.abspath(__file__))
         self.script = os.path.join(cwd, f"{cwd}/{script_name}.ps1")
 
-        self.args = {field:policy[field] for field in config_fields}
+        if config_fields and policy:
+            self.args = {field:policy[field] for field in config_fields}
 
     def __call__(self, *args):
         if not self.policy:
