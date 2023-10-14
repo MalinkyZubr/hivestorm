@@ -2,7 +2,8 @@
 # update all programs installed
 
 $chocolateyUpgrades = @(
-
+    "choco upgrade firefox -y",
+    "choco upgrade notepadplusplus -y"
 )
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 # use strong encryption
@@ -16,10 +17,10 @@ try {
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-    #upgrade firefox
-    choco upgrade firefox -y
-    #upgrade notepadplusplus
-    choco upgrade notepadplusplus -y
+    foreach($update in $chocolateyUpgrades)
+    {
+        Invoke-Expression $update
+    }
 }
 catch [RuntimeException] {
     Write-Host "[!] Must install NET Framework, rebooting now"
